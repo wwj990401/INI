@@ -8,6 +8,7 @@ int GetIniKeyString(char *title, char *key, char *filename, char *buf)
 	int  flag = 0;
 	char sTitle[64], *wTmp;
 	char sLine[1024];
+	char Nofind[2] = "[";
 	sprintf(sTitle, "[%s]", title);
 
 	if (NULL == (fp = fopen(filename, "r")))
@@ -19,12 +20,16 @@ int GetIniKeyString(char *title, char *key, char *filename, char *buf)
 	{
 		if (0 == strncmp("//", sLine, 2)) continue;
 		if ('#' == sLine[0])              continue;
+		if (flag == 1 && strncmp(sLine, Nofind, 1) == 0)  break;
 		wTmp = strchr(sLine, '=');
 		if ((NULL != wTmp) && (1 == flag))
 		{
 			if (0 == strncmp(key, sLine, strlen(key)))
 			{
-				sLine[strlen(sLine) - 1] = '\0';
+				if (sLine[strlen(sLine) - 1] == '\n')
+				{
+					sLine[strlen(sLine) - 1] = '\0';
+				}
 				fclose(fp);
 				while (*(wTmp + 1) == ' ')
 				{
